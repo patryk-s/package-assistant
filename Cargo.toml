@@ -1,0 +1,24 @@
+[package]
+name = "package-assistant"
+version = "0.6.0"
+authors = ["Patryk Sidzina <patryk.sidzina+pa@gmail.com>"]
+description = "Package Assistant helps you manage your package managers."
+homepage = "https://github.com/patryk-s/package-assistant"
+repository = "https://github.com/patryk-s/package-assistant"
+categories = ["command-line-utilities"]
+keywords = ["package-manager", "cli"]
+license = "MIT"
+exclude = ["/.github/"]
+edition = "2021"
+
+[[bin]]
+name = "pa"
+path = "src/main.rs"
+
+[dependencies]
+anyhow = "1.0.92"
+clap = { version = "4.5.20", features = ["derive"] }
+confy = "0.6.1"
+directories = "5.0.1"
+inquire = "0.7.5"
+serde = { version = "1.0.214", features = ["derive"] }
