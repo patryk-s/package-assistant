@@ -8,6 +8,7 @@ repository = "https://github.com/patryk-s/package-assistant"
 categories = ["command-line-utilities"]
 keywords = ["package-manager", "cli"]
 license = "MIT"
+readme = "README.md"
 exclude = ["/.github/"]
 edition = "2021"
 
@@ -22,3 +23,8 @@ confy = "0.6.1"
 directories = "5.0.1"
 inquire = "0.7.5"
 serde = { version = "1.0.214", features = ["derive"] }
+
+# The profile that 'dist' will build with
+[profile.dist]
+inherits = "release"
+lto = "thin"
