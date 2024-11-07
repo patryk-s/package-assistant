@@ -1,6 +1,6 @@
 [package]
 name = "package-assistant"
-version = "0.6.0"
+version = "0.6.1"
 authors = ["Patryk Sidzina <patryk.sidzina+pa@gmail.com>"]
 description = "Package Assistant helps you manage your package managers."
 homepage = "https://github.com/patryk-s/package-assistant"
@@ -17,7 +17,7 @@ name = "pa"
 path = "src/main.rs"
 
 [dependencies]
-anyhow = "1.0.92"
+anyhow = "1.0.93"
 clap = { version = "4.5.20", features = ["derive"] }
 confy = "0.6.1"
 directories = "5.0.1"

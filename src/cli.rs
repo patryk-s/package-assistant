@@ -19,8 +19,10 @@ pub(crate) enum Command {
     /// Create or update configuration
     Config,
     /// Show package details
+    #[clap(alias = "show")]
     Info(PackageArgs),
     /// Install packages
+    #[clap(alias = "add")]
     Install {
         #[arg(required = true)]
         packages: Vec<String>,
@@ -28,9 +30,16 @@ pub(crate) enum Command {
     /// List installed packages
     List,
     /// Search for package
+    #[clap(alias = "find")]
     Search(PackageArgs),
     /// List available package managers
     Managers,
+    /// Uninstall packages
+    #[clap(alias = "remove")]
+    Uninstall {
+        #[arg(required = true)]
+        packages: Vec<String>,
+    },
     /// Update package database
     Update,
     /// Upgrade installed packages

@@ -28,6 +28,7 @@ fn main() -> Result<()> {
         Command::Update => managers::update(&cfg, &args)?,
         Command::Upgrade => managers::upgrade(&cfg, &args)?,
         Command::Install { ref packages } => managers::install(&cfg, &args, packages)?,
+        Command::Uninstall { ref packages } => managers::uninstall(&cfg, &args, packages)?,
     };
 
     match status.code() {

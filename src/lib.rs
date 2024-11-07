@@ -32,6 +32,11 @@ pub trait PackageManager {
         args.extend(packages);
         self.exec(args)
     }
+    fn uninstall(&self, packages: Vec<&str>) -> Result<ExitStatus> {
+        let mut args = vec!["uninstall"];
+        args.extend(packages);
+        self.exec(args)
+    }
     fn info(&self, package: &str) -> Result<ExitStatus> {
         self.exec(vec!["info", package])
     }

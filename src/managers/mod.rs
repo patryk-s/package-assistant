@@ -134,6 +134,22 @@ pub(crate) fn install(
     Ok(ExitStatus::default())
 }
 
+pub(crate) fn uninstall(
+    cfg: &PaConfig,
+    cli: &Cli,
+    packages: &[String],
+) -> Result<ExitStatus, anyhow::Error> {
+    let managers = get_managers(cfg, cli)?;
+    let _results: Result<Vec<_>, _> = managers
+        .values()
+        .map(|m| {
+            println!("## {}", m.name());
+            m.uninstall(packages.iter().map(|p| p.as_str()).collect())
+        })
+        .collect();
+    Ok(ExitStatus::default())
+}
+
 pub(crate) fn version(cfg: &PaConfig, cli: &Cli) -> Result<ExitStatus, anyhow::Error> {
     let managers = get_managers(cfg, cli)?;
     let _results: Result<Vec<_>, _> = managers

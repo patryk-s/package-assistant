@@ -12,4 +12,10 @@ impl PackageManager for Manager {
     fn list(&self) -> Result<ExitStatus> {
         self.exec(["list", "--installed"].into())
     }
+
+    fn uninstall(&self, packages: Vec<&str>) -> Result<ExitStatus> {
+        let mut args = vec!["remove"];
+        args.extend(packages);
+        self.exec(args)
+    }
 }

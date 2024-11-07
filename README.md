@@ -31,16 +31,17 @@ Run `pa help` for the full usage:
 Usage: pa [OPTIONS] <COMMAND>
 
 Commands:
-  config    Create or update configuration
-  info      Show package details
-  install   Install packages
-  list      List installed packages
-  search    Search for package
-  managers  List available package managers
-  update    Update package database
-  upgrade   Upgrade installed packages
-  version   Show package manager version
-  help      Print this message or the help of the given subcommand(s)
+  config     Create or update configuration
+  info       Show package details
+  install    Install packages
+  list       List installed packages
+  search     Search for package
+  managers   List available package managers
+  uninstall  Uninstall packages
+  update     Update package database
+  upgrade    Upgrade installed packages
+  version    Show package manager version
+  help       Print this message or the help of the given subcommand(s)
 
 Options:
   -a, --all-managers       Apply command to all configured package managers
@@ -48,6 +49,13 @@ Options:
   -h, --help               Print help
   -V, --version            Print version
 ```
+
+## Supported package managers
+
+- apt
+- cargo (uses [cargo binstall](https://github.com/cargo-bins/cargo-binstall) and [cargo install-update](https://github.com/nabijaczleweli/cargo-update))
+- homebrew
+- snap
 
 ## Installation
 
