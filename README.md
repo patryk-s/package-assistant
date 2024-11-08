@@ -56,6 +56,8 @@ Options:
 - cargo (uses [cargo binstall](https://github.com/cargo-bins/cargo-binstall) and [cargo install-update](https://github.com/nabijaczleweli/cargo-update))
 - homebrew
 - snap
+- dnf
+- pkg (FreeBSD)
 
 ## Installation
 

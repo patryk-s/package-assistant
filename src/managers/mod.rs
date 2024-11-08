@@ -7,6 +7,9 @@ mod snap;
 #[cfg(not(target_os = "macos"))]
 mod dnf;
 
+#[cfg(not(target_os = "macos"))]
+mod pkg;
+
 mod cargo;
 mod homebrew;
 
@@ -28,18 +31,21 @@ pub(crate) fn discover_managers() -> Vec<String> {
     managers
 }
 
+// TODO: create a macro_rules to generate this function
 #[cfg(not(target_os = "macos"))]
 /// Returns all package managers (for current platform)
 fn all_managers() -> Result<Managers, anyhow::Error> {
     let manager_brew = homebrew::Manager;
     let manager_cargo = cargo::Manager;
     let manager_apt = apt::Manager;
+    let manager_pkg = pkg::Manager;
     let manager_snap = snap::Manager;
     let manager_dnf = dnf::Manager;
     let all_managers: Vec<Box<dyn PackageManager>> = vec![
         Box::new(manager_brew),
         Box::new(manager_cargo),
         Box::new(manager_apt),
+        Box::new(manager_pkg),
         Box::new(manager_snap),
         Box::new(manager_dnf),
     ];
