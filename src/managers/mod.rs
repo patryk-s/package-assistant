@@ -4,6 +4,9 @@ mod apt;
 #[cfg(not(target_os = "macos"))]
 mod snap;
 
+#[cfg(not(target_os = "macos"))]
+mod dnf;
+
 mod cargo;
 mod homebrew;
 
@@ -32,11 +35,13 @@ fn all_managers() -> Result<Managers, anyhow::Error> {
     let manager_cargo = cargo::Manager;
     let manager_apt = apt::Manager;
     let manager_snap = snap::Manager;
+    let manager_dnf = dnf::Manager;
     let all_managers: Vec<Box<dyn PackageManager>> = vec![
         Box::new(manager_brew),
         Box::new(manager_cargo),
         Box::new(manager_apt),
         Box::new(manager_snap),
+        Box::new(manager_dnf),
     ];
     let mut managers = Managers::new();
     for manager in all_managers {
