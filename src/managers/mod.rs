@@ -12,6 +12,7 @@ mod pkg;
 
 mod cargo;
 mod homebrew;
+mod nix_env;
 
 use anyhow::bail;
 use package_assistant::PackageManager;
@@ -41,6 +42,7 @@ fn all_managers() -> Result<Managers, anyhow::Error> {
     let manager_pkg = pkg::Manager;
     let manager_snap = snap::Manager;
     let manager_dnf = dnf::Manager;
+    let manager_nix_env = nix_env::Manager;
     let all_managers: Vec<Box<dyn PackageManager>> = vec![
         Box::new(manager_brew),
         Box::new(manager_cargo),
@@ -48,6 +50,7 @@ fn all_managers() -> Result<Managers, anyhow::Error> {
         Box::new(manager_pkg),
         Box::new(manager_snap),
         Box::new(manager_dnf),
+        Box::new(manager_nix_env),
     ];
     let mut managers = Managers::new();
     for manager in all_managers {
@@ -63,8 +66,12 @@ fn all_managers() -> Result<Managers, anyhow::Error> {
 fn all_managers() -> Result<Managers, anyhow::Error> {
     let manager_brew = homebrew::Manager;
     let manager_cargo = cargo::Manager;
-    let all_managers: Vec<Box<dyn PackageManager>> =
-        vec![Box::new(manager_brew), Box::new(manager_cargo)];
+    let manager_nix_env = nix_env::Manager;
+    let all_managers: Vec<Box<dyn PackageManager>> = vec![
+        Box::new(manager_brew),
+        Box::new(manager_cargo),
+        Box::new(manager_nix_env),
+    ];
     let mut managers = Managers::new();
     for manager in all_managers {
         if manager.exists() {
