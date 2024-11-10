@@ -1,6 +1,8 @@
 # Package Assistant
 
-Package Assistant helps you manage your package managers.
+Package Assistant provides a consistent CLI interface for all supported package managers, across multiple OSes,
+so you don't have to remember the specific syntax on a given system. Additionally, it helps you manage several
+package managers on a single system (for example, `apt` and `snap` on Ubuntu).
 
 Configure which package managers you want to use and pick a main (default) package manager (run `pa config` to choose).
 You can then use `pa` to run your usual package commands, for example:
