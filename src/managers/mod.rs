@@ -13,6 +13,7 @@ mod pkg;
 #[cfg(not(target_os = "macos"))]
 mod pacman;
 
+#[cfg(not(target_os = "macos"))]
 mod flatpak;
 
 mod cargo;
