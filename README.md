@@ -57,6 +57,7 @@ Options:
 - dnf
 - homebrew
 - nix-env
+- pacman
 - pkg (FreeBSD)
 - snap
 

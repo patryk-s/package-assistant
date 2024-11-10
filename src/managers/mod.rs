@@ -10,6 +10,9 @@ mod dnf;
 #[cfg(not(target_os = "macos"))]
 mod pkg;
 
+#[cfg(not(target_os = "macos"))]
+mod pacman;
+
 mod cargo;
 mod homebrew;
 mod nix_env;
@@ -43,6 +46,7 @@ fn all_managers() -> Result<Managers, anyhow::Error> {
     let manager_snap = snap::Manager;
     let manager_dnf = dnf::Manager;
     let manager_nix_env = nix_env::Manager;
+    let manager_pacman = pacman::Manager;
     let all_managers: Vec<Box<dyn PackageManager>> = vec![
         Box::new(manager_brew),
         Box::new(manager_cargo),
@@ -51,6 +55,7 @@ fn all_managers() -> Result<Managers, anyhow::Error> {
         Box::new(manager_snap),
         Box::new(manager_dnf),
         Box::new(manager_nix_env),
+        Box::new(manager_pacman),
     ];
     let mut managers = Managers::new();
     for manager in all_managers {
