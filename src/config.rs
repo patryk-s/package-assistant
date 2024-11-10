@@ -24,16 +24,30 @@ impl PaConfig {
 
 impl Default for PaConfig {
     fn default() -> Self {
-        let managers = MultiSelect::new("Select package managers", discover_managers())
-            .prompt()
-            .expect("multiselect");
-        let default_manager = Select::new("Choose main package manager", managers.clone())
-            .prompt()
-            .expect("default manager")
-            .to_string();
-        Self {
-            default_manager,
-            managers,
+        let managers = discover_managers();
+        if managers.is_empty() {
+            eprintln!("No supported manager found!");
+            Self {
+                default_manager: "".to_string(),
+                managers: Vec::new(),
+            }
+        } else if managers.len() == 1 {
+            Self {
+                default_manager: managers[0].clone(),
+                managers,
+            }
+        } else {
+            let managers = MultiSelect::new("Select package managers", managers)
+                .prompt()
+                .expect("multiselect");
+            let default_manager = Select::new("Choose main package manager", managers.clone())
+                .prompt()
+                .expect("default manager")
+                .to_string();
+            Self {
+                default_manager,
+                managers,
+            }
         }
     }
 }
