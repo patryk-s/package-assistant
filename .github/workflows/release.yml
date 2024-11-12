@@ -45,7 +45,7 @@ jobs:
   # Build sources for every OS
   build:
     name: Build release binaries
-    needs: create_please
+    needs: create_release
     strategy:
       fail-fast: false
       matrix:
@@ -108,7 +108,7 @@ jobs:
   # Create GitHub release with Rust build targets and release notes
   upload_artifacts:
     name: Add Build Artifacts to Release
-    needs: [create_please, build]
+    needs: [create_release, build]
     runs-on: ubuntu-latest
     steps:
       - name: Setup | Artifacts
@@ -118,7 +118,7 @@ jobs:
         run: for file in $PACKAGE_NAME-*/$PACKAGE_NAME-*; do openssl dgst -sha256 -r "$file" | awk '{print $1}' > "${file}.sha256"; done
 
       - name: Setup | Publish Release
-        run: gh release edit ${{ needs.create_please.outputs.version }} --draft=false
+        run: gh release edit ${{ needs.create_release.outputs.version }} --draft=false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -126,13 +126,13 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           files: $PACKAGE_NAME-*/$PACKAGE_NAME-*
-          tag_name: ${{ needs.create_please.outputs.version }}
+          tag_name: ${{ needs.create_release.outputs.version }}
 
   # Publish to Crates.io
   cargo_publish:
     name: Publish Cargo Package
     runs-on: ubuntu-latest
-    needs: [create_please, upload_artifacts]
+    needs: [create_release, upload_artifacts]
     steps:
       - name: Setup | Checkout
         uses: actions/checkout@v4
