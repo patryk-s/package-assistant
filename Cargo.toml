@@ -34,8 +34,3 @@ confy = "0.6.1"
 directories = "5.0.1"
 inquire = "0.7.5"
 serde = { version = "1.0.214", features = ["derive"] }
-
-# The profile that 'dist' will build with
-[profile.dist]
-inherits = "release"
-lto = "thin"
