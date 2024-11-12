@@ -39,6 +39,7 @@ jobs:
         run: gh release create $VERSION --draft --verify-tag --title $VERSION
     outputs:
       version: ${{ env.VERSION }}
+      package_name: package-assistant-${{ env.VERSION }}
 
   # Build sources for every OS
   build:
@@ -63,6 +64,9 @@ jobs:
           - target: aarch64-apple-darwin
             os: macos-latest
 
+          - target: x86_64-apple-darwin
+            os: macos-latest
+
           - target: x86_64-unknown-freebsd
             os: ubuntu-latest
 
@@ -77,6 +81,13 @@ jobs:
         with:
           toolchain: stable
           target: ${{ matrix.target }}
+
+      - name: Determine archive name
+        shell: bash
+        run: |
+          package_name="${{ needs.create_release.outputs.package_name }}"
+          echo "ARCHIVE=$package_name-${{ matrix.target }}" >> $GITHUB_ENV
+          echo "BIN=target/${{ matrix.target }}/release" >> $GITHUB_ENV
 
       - name: Setup | Install cross [Linux]
         if: matrix.os == 'ubuntu-latest'
@@ -93,15 +104,15 @@ jobs:
       - name: Post Build | Prepare artifacts [-nix]
         if: matrix.os != 'windows-latest'
         run: |
-          cd target/${{ matrix.target }}/release
-          tar czvf ../../../package-assistant-${{ matrix.target }}.tar.gz pa
-          cd -
+          cp "$BIN" "$ARCHIVE"/
+          cp {README.md,LICENSE} "$ARCHIVE"/
+          tar czvf "$ARCHIVE.tar.gz" "$ARCHIVE"
 
       - name: Release | Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: package-assistant-${{ matrix.target }}.tar.gz
-          path: package-assistant-${{ matrix.target }}.tar.gz
+          name: ${{ needs.create_release.outputs.package_name }}-${{ matrix.target }}.tar.gz
+          path: ${{ needs.create_release.outputs.package_name }}-${{ matrix.target }}.tar.gz
 
   # Create GitHub release with Rust build targets and release notes
   upload_artifacts:
