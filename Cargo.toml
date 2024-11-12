@@ -11,10 +11,21 @@ license = "MIT"
 readme = "README.md"
 exclude = ["/.github/"]
 edition = "2021"
+include = [
+    "**/*.rs",
+    "Cargo.lock",
+    "Cargo.toml",
+    "LICENSE",
+    "README.md",
+]
 
 [[bin]]
 name = "pa"
 path = "src/main.rs"
+
+[profile.release]
+lto = "fat"
+strip = true
 
 [dependencies]
 anyhow = "1.0.93"

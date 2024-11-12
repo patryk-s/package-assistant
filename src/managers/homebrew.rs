@@ -1,4 +1,4 @@
-use package_assistant::PackageManager;
+use super::PackageManager;
 
 pub(crate) struct Manager;
 

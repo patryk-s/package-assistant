@@ -1,6 +1,7 @@
 use anyhow::Result;
-use package_assistant::PackageManager;
 use std::process::{Command, ExitStatus, Stdio};
+
+use super::PackageManager;
 
 pub(crate) struct Manager;
 

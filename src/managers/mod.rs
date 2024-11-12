@@ -20,9 +20,12 @@ mod cargo;
 mod homebrew;
 mod nix_env;
 
-use anyhow::bail;
-use package_assistant::PackageManager;
-use std::{collections::HashMap, process::ExitStatus};
+use anyhow::{bail, Context, Result};
+use std::{
+    collections::HashMap,
+    fmt::{Debug, Display},
+    process::{Command, ExitStatus, Stdio},
+};
 
 use crate::{config::PaConfig, Cli};
 
@@ -41,7 +44,7 @@ pub(crate) fn discover_managers() -> Vec<String> {
 // TODO: create a macro_rules to generate this function
 #[cfg(not(target_os = "macos"))]
 /// Returns all package managers (for current platform)
-fn all_managers() -> Result<Managers, anyhow::Error> {
+fn all_managers() -> Result<Managers> {
     let manager_brew = homebrew::Manager;
     let manager_cargo = cargo::Manager;
     let manager_apt = apt::Manager;
@@ -73,7 +76,7 @@ fn all_managers() -> Result<Managers, anyhow::Error> {
 
 #[cfg(target_os = "macos")]
 /// Returns all package managers (for current platform)
-fn all_managers() -> Result<Managers, anyhow::Error> {
+fn all_managers() -> Result<Managers> {
     let manager_brew = homebrew::Manager;
     let manager_cargo = cargo::Manager;
     let manager_nix_env = nix_env::Manager;
@@ -91,7 +94,7 @@ fn all_managers() -> Result<Managers, anyhow::Error> {
     Ok(managers)
 }
 
-fn get_managers(cfg: &PaConfig, cli: &Cli) -> Result<Managers, anyhow::Error> {
+fn get_managers(cfg: &PaConfig, cli: &Cli) -> Result<Managers> {
     let managers: Managers = all_managers()?
         .into_iter()
         .filter(|(name, _manager)| {
@@ -110,7 +113,7 @@ fn get_managers(cfg: &PaConfig, cli: &Cli) -> Result<Managers, anyhow::Error> {
     Ok(managers)
 }
 
-pub(crate) fn list(cfg: &PaConfig, cli: &Cli) -> Result<ExitStatus, anyhow::Error> {
+pub(crate) fn list(cfg: &PaConfig, cli: &Cli) -> Result<ExitStatus> {
     let managers = get_managers(cfg, cli)?;
     let _results: Result<Vec<_>, _> = managers
         .values()
@@ -122,7 +125,7 @@ pub(crate) fn list(cfg: &PaConfig, cli: &Cli) -> Result<ExitStatus, anyhow::Erro
     Ok(ExitStatus::default())
 }
 
-pub(crate) fn update(cfg: &PaConfig, cli: &Cli) -> Result<ExitStatus, anyhow::Error> {
+pub(crate) fn update(cfg: &PaConfig, cli: &Cli) -> Result<ExitStatus> {
     let managers = get_managers(cfg, cli)?;
     let _results: Result<Vec<_>, _> = managers
         .values()
@@ -134,7 +137,7 @@ pub(crate) fn update(cfg: &PaConfig, cli: &Cli) -> Result<ExitStatus, anyhow::Er
     Ok(ExitStatus::default())
 }
 
-pub(crate) fn upgrade(cfg: &PaConfig, cli: &Cli) -> Result<ExitStatus, anyhow::Error> {
+pub(crate) fn upgrade(cfg: &PaConfig, cli: &Cli) -> Result<ExitStatus> {
     let managers = get_managers(cfg, cli)?;
     let _results: Result<Vec<_>, _> = managers
         .values()
@@ -146,11 +149,7 @@ pub(crate) fn upgrade(cfg: &PaConfig, cli: &Cli) -> Result<ExitStatus, anyhow::E
     Ok(ExitStatus::default())
 }
 
-pub(crate) fn install(
-    cfg: &PaConfig,
-    cli: &Cli,
-    packages: &[String],
-) -> Result<ExitStatus, anyhow::Error> {
+pub(crate) fn install(cfg: &PaConfig, cli: &Cli, packages: &[String]) -> Result<ExitStatus> {
     let managers = get_managers(cfg, cli)?;
     let _results: Result<Vec<_>, _> = managers
         .values()
@@ -162,11 +161,7 @@ pub(crate) fn install(
     Ok(ExitStatus::default())
 }
 
-pub(crate) fn uninstall(
-    cfg: &PaConfig,
-    cli: &Cli,
-    packages: &[String],
-) -> Result<ExitStatus, anyhow::Error> {
+pub(crate) fn uninstall(cfg: &PaConfig, cli: &Cli, packages: &[String]) -> Result<ExitStatus> {
     let managers = get_managers(cfg, cli)?;
     let _results: Result<Vec<_>, _> = managers
         .values()
@@ -178,7 +173,7 @@ pub(crate) fn uninstall(
     Ok(ExitStatus::default())
 }
 
-pub(crate) fn version(cfg: &PaConfig, cli: &Cli) -> Result<ExitStatus, anyhow::Error> {
+pub(crate) fn version(cfg: &PaConfig, cli: &Cli) -> Result<ExitStatus> {
     let managers = get_managers(cfg, cli)?;
     let _results: Result<Vec<_>, _> = managers
         .values()
@@ -190,7 +185,7 @@ pub(crate) fn version(cfg: &PaConfig, cli: &Cli) -> Result<ExitStatus, anyhow::E
     Ok(ExitStatus::default())
 }
 
-pub(crate) fn info(cfg: &PaConfig, cli: &Cli, package: &str) -> Result<ExitStatus, anyhow::Error> {
+pub(crate) fn info(cfg: &PaConfig, cli: &Cli, package: &str) -> Result<ExitStatus> {
     let managers = get_managers(cfg, cli)?;
     let _results: Result<Vec<_>, _> = managers
         .values()
@@ -202,11 +197,7 @@ pub(crate) fn info(cfg: &PaConfig, cli: &Cli, package: &str) -> Result<ExitStatu
     Ok(ExitStatus::default())
 }
 
-pub(crate) fn search(
-    cfg: &PaConfig,
-    cli: &Cli,
-    package: &str,
-) -> Result<ExitStatus, anyhow::Error> {
+pub(crate) fn search(cfg: &PaConfig, cli: &Cli, package: &str) -> Result<ExitStatus> {
     let managers = get_managers(cfg, cli)?;
     let _results: Result<Vec<_>, _> = managers
         .values()
@@ -216,4 +207,67 @@ pub(crate) fn search(
         })
         .collect();
     Ok(ExitStatus::default())
+}
+
+pub(crate) trait PackageManager {
+    fn name(&self) -> &str;
+    fn exists(&self) -> bool {
+        match Command::new(self.name())
+            .arg("--version")
+            .stdout(Stdio::null())
+            .stderr(Stdio::null())
+            .status()
+        {
+            Ok(s) => s.success(),
+            Err(_) => false,
+        }
+    }
+    fn list(&self) -> Result<ExitStatus> {
+        self.exec(["list"].into())
+    }
+    fn update(&self) -> Result<ExitStatus> {
+        self.exec(["update"].into())
+    }
+    fn upgrade(&self) -> Result<ExitStatus> {
+        self.exec(["upgrade"].into())
+    }
+    fn install(&self, packages: Vec<&str>) -> Result<ExitStatus> {
+        let mut args = vec!["install"];
+        args.extend(packages);
+        self.exec(args)
+    }
+    fn uninstall(&self, packages: Vec<&str>) -> Result<ExitStatus> {
+        let mut args = vec!["uninstall"];
+        args.extend(packages);
+        self.exec(args)
+    }
+    fn info(&self, package: &str) -> Result<ExitStatus> {
+        self.exec(vec!["info", package])
+    }
+    fn search(&self, package: &str) -> Result<ExitStatus> {
+        self.exec(vec!["search", package])
+    }
+    fn version(&self) -> Result<ExitStatus> {
+        self.exec(["--version"].into())
+    }
+    fn exec(&self, args: Vec<&str>) -> Result<ExitStatus> {
+        let status = Command::new(self.name())
+            .args(args)
+            .status()
+            .with_context(|| format!("Error running command '{}'", self.name()))?;
+        Ok(status)
+    }
+}
+
+impl Debug for dyn PackageManager {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        // self.name().fmt(f)
+        write!(f, "PackageManager({})", self.name())
+    }
+}
+
+impl Display for dyn PackageManager {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", self.name())
+    }
 }

@@ -1,6 +1,7 @@
 use anyhow::{Context, Result};
-use package_assistant::PackageManager;
 use std::{os::unix::process::ExitStatusExt, process::ExitStatus};
+
+use super::PackageManager;
 
 pub(crate) struct Manager;
 
