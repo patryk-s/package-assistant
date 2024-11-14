@@ -66,8 +66,16 @@ Options:
 
 ## Installation
 
-If you have `rustc` and `cargo` installed (if not, see [rustup.rs](https://rustup.rs/))
-you can clone this repo, `cd` into it, and run:
+### Cargo
+
+If you have `rustc` and `cargo` installed (if not, see [rustup.rs](https://rustup.rs/))  
+you can build and install from [crates.io](https://crates.io/crates/package-assistant), just run:
+
+```shell
+cargo install package-assistant
+```
+
+Or clone this repo, `cd` into it, and run:
 
 ```shell
 cargo install --path .
