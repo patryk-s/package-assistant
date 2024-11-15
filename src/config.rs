@@ -1,8 +1,8 @@
 use std::path::PathBuf;
 
 use confy::ConfyError;
+use dialoguer::{MultiSelect, Select};
 use directories::ProjectDirs;
-use inquire::{MultiSelect, Select};
 use serde::{Deserialize, Serialize};
 
 use crate::managers::discover_managers;
@@ -37,13 +37,18 @@ impl Default for PaConfig {
                 managers,
             }
         } else {
-            let managers = MultiSelect::new("Select package managers", managers)
-                .prompt()
+            let choices = MultiSelect::new()
+                .with_prompt("Select package managers")
+                .items(&managers)
+                .interact()
                 .expect("multiselect");
-            let default_manager = Select::new("Choose main package manager", managers.clone())
-                .prompt()
-                .expect("default manager")
-                .to_string();
+            let managers: Vec<String> = choices.into_iter().map(|i| managers[i].clone()).collect();
+            let choice = Select::new()
+                .with_prompt("Choose main package manager")
+                .items(&managers)
+                .interact()
+                .expect("default manager");
+            let default_manager = managers[choice].clone();
             Self {
                 default_manager,
                 managers,
