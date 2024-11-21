@@ -14,6 +14,12 @@ mod pkg;
 mod pacman;
 
 #[cfg(not(target_os = "macos"))]
+mod paru;
+
+#[cfg(not(target_os = "macos"))]
+mod yay;
+
+#[cfg(not(target_os = "macos"))]
 mod flatpak;
 
 mod cargo;
@@ -53,6 +59,8 @@ fn all_managers() -> Result<Managers> {
     let manager_dnf = dnf::Manager;
     let manager_nix_env = nix_env::Manager;
     let manager_pacman = pacman::Manager;
+    let manager_paru = paru::Manager;
+    let manager_yay = yay::Manager;
     let manager_flatpak = flatpak::Manager;
     let all_managers: Vec<Box<dyn PackageManager>> = vec![
         Box::new(manager_brew),
@@ -63,6 +71,8 @@ fn all_managers() -> Result<Managers> {
         Box::new(manager_dnf),
         Box::new(manager_nix_env),
         Box::new(manager_pacman),
+        Box::new(manager_paru),
+        Box::new(manager_yay),
         Box::new(manager_flatpak),
     ];
     let mut managers = Managers::new();
