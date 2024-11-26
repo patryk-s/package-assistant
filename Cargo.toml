@@ -1,6 +1,6 @@
 [package]
 name = "package-assistant"
-version = "0.9.0"
+version = "0.10.0"
 authors = ["Patryk Sidzina <patryk.sidzina+pa@gmail.com>"]
 description = "Package Assistant helps you manage your package managers."
 homepage = "https://github.com/patryk-s/package-assistant"
