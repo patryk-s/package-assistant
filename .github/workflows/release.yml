@@ -87,7 +87,7 @@ jobs:
         run: |
           package_name="${{ needs.create_release.outputs.package_name }}"
           echo "ARCHIVE=$package_name-${{ matrix.target }}" >> $GITHUB_ENV
-          echo "BIN=target/${{ matrix.target }}/release" >> $GITHUB_ENV
+          echo "BIN=target/${{ matrix.target }}/release/pa" >> $GITHUB_ENV
 
       - name: Setup | Install cross [Linux]
         if: matrix.os == 'ubuntu-latest'
