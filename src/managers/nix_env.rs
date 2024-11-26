@@ -11,7 +11,7 @@ impl PackageManager for Manager {
     }
 
     fn list(&self) -> Result<ExitStatus> {
-        self.exec(["--query", "--installed"].into())
+        self.exec(vec!["--query", "--installed", "--description"])
     }
 
     fn uninstall(&self, packages: Vec<&str>) -> Result<ExitStatus> {
@@ -26,11 +26,11 @@ impl PackageManager for Manager {
     }
 
     fn upgrade(&self) -> Result<ExitStatus> {
-        self.exec(["--upgrade"].into())
+        self.exec(vec!["--upgrade"])
     }
 
     fn install(&self, packages: Vec<&str>) -> Result<ExitStatus> {
-        let mut args = vec!["--install"];
+        let mut args = vec!["--install", "--attr"];
         args.extend(packages);
         self.exec(args)
     }
