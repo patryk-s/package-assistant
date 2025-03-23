@@ -1,4 +1,7 @@
 #[cfg(not(target_os = "macos"))]
+mod apk;
+
+#[cfg(not(target_os = "macos"))]
 mod apt;
 
 #[cfg(not(target_os = "macos"))]
@@ -53,6 +56,7 @@ pub(crate) fn discover_managers() -> Vec<String> {
 fn all_managers() -> Result<Managers> {
     let manager_brew = homebrew::Manager;
     let manager_cargo = cargo::Manager;
+    let manager_apk = apk::Manager;
     let manager_apt = apt::Manager;
     let manager_pkg = pkg::Manager;
     let manager_snap = snap::Manager;
@@ -65,6 +69,7 @@ fn all_managers() -> Result<Managers> {
     let all_managers: Vec<Box<dyn PackageManager>> = vec![
         Box::new(manager_brew),
         Box::new(manager_cargo),
+        Box::new(manager_apk),
         Box::new(manager_apt),
         Box::new(manager_pkg),
         Box::new(manager_snap),
