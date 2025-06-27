@@ -5,7 +5,7 @@ mod cli;
 mod config;
 mod managers;
 
-use cli::*;
+use cli::{Cli, Command, Parser};
 
 fn main() -> Result<()> {
     let args = Cli::parse();
@@ -20,7 +20,7 @@ fn main() -> Result<()> {
         Command::List => managers::list(&cfg, &args)?,
         Command::Version => managers::version(&cfg, &args)?,
         Command::Managers => {
-            cfg.list()?;
+            cfg.list();
             ExitStatus::default()
         }
         Command::Info(ref p) => managers::info(&cfg, &args, &p.package)?,

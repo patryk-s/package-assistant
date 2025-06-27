@@ -6,7 +6,7 @@ use super::PackageManager;
 pub(crate) struct Manager;
 
 impl PackageManager for Manager {
-    fn name(&self) -> &str {
+    fn name(&self) -> &'static str {
         "cargo"
     }
     fn exists(&self) -> bool {

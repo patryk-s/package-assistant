@@ -13,12 +13,11 @@ pub(crate) struct PaConfig {
     pub(crate) managers: Vec<String>,
 }
 impl PaConfig {
-    pub(crate) fn list(&self) -> Result<(), anyhow::Error> {
+    pub(crate) fn list(&self) {
         for manager in &self.managers {
             println!(" * {manager}");
         }
         println!("Main manager: {}", self.default_manager);
-        Ok(())
     }
 }
 
@@ -28,7 +27,7 @@ impl Default for PaConfig {
         if managers.is_empty() {
             eprintln!("No supported manager found!");
             Self {
-                default_manager: "".to_string(),
+                default_manager: String::new(),
                 managers: Vec::new(),
             }
         } else if managers.len() == 1 {

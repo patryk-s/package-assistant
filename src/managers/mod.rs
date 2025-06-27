@@ -43,7 +43,7 @@ pub(crate) type Managers = HashMap<String, Box<dyn PackageManager>>;
 pub(crate) fn discover_managers() -> Vec<String> {
     let mut managers = Vec::new();
     // TODO: do actual command discovery
-    let all_managers = all_managers().expect("all managers");
+    let all_managers = all_managers();
     for (manager, _) in all_managers {
         managers.push(manager);
     }
@@ -53,7 +53,7 @@ pub(crate) fn discover_managers() -> Vec<String> {
 // TODO: create a macro_rules to generate this function
 #[cfg(not(target_os = "macos"))]
 /// Returns all package managers (for current platform)
-fn all_managers() -> Result<Managers> {
+fn all_managers() -> Managers {
     let manager_brew = homebrew::Manager;
     let manager_cargo = cargo::Manager;
     let manager_apk = apk::Manager;
@@ -86,12 +86,12 @@ fn all_managers() -> Result<Managers> {
             managers.insert(manager.name().to_string(), manager);
         }
     }
-    Ok(managers)
+    managers
 }
 
 #[cfg(target_os = "macos")]
 /// Returns all package managers (for current platform)
-fn all_managers() -> Result<Managers> {
+fn all_managers() -> Managers {
     let manager_brew = homebrew::Manager;
     let manager_cargo = cargo::Manager;
     let manager_nix_env = nix_env::Manager;
@@ -106,11 +106,11 @@ fn all_managers() -> Result<Managers> {
             managers.insert(manager.name().to_string(), manager);
         }
     }
-    Ok(managers)
+    managers
 }
 
 fn get_managers(cfg: &PaConfig, cli: &Cli) -> Result<Managers> {
-    let managers: Managers = all_managers()?
+    let managers: Managers = all_managers()
         .into_iter()
         .filter(|(name, _manager)| {
             if cli.all_managers {
@@ -170,7 +170,7 @@ pub(crate) fn install(cfg: &PaConfig, cli: &Cli, packages: &[String]) -> Result<
         .values()
         .map(|m| {
             println!("## {}", m.name());
-            m.install(packages.iter().map(|p| p.as_str()).collect())
+            m.install(packages.iter().map(AsRef::as_ref).collect())
         })
         .collect();
     Ok(ExitStatus::default())
@@ -182,7 +182,7 @@ pub(crate) fn uninstall(cfg: &PaConfig, cli: &Cli, packages: &[String]) -> Resul
         .values()
         .map(|m| {
             println!("## {}", m.name());
-            m.uninstall(packages.iter().map(|p| p.as_str()).collect())
+            m.uninstall(packages.iter().map(AsRef::as_ref).collect())
         })
         .collect();
     Ok(ExitStatus::default())
